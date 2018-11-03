@@ -1,6 +1,6 @@
 import numpy as np
 
-def isa (fobj, bounds, alpha=0.2, popsize=20, its=10000):
+def isa (fobj, bounds, alpha=0.2, popsize=20, evals=1000):
     #init the population
     dimensions=len(bounds)
     init_pop = np.random.rand(popsize, dimensions)
@@ -10,7 +10,7 @@ def isa (fobj, bounds, alpha=0.2, popsize=20, its=10000):
     pop = Lb + init_pop * diff
     #find fitnesses
     fit = np.asarray([fobj(ind) for ind in pop])
-    for j in range(its):
+    for j in range(evals):
         # find the best
         x_gb_idx = np.argmin(fit)
         gb = pop[x_gb_idx]
@@ -56,5 +56,8 @@ def isa (fobj, bounds, alpha=0.2, popsize=20, its=10000):
                 pop[i] = pop_new[i]
     return fit, pop
 
+def isa_runner(fobj, bounds, num_runs=30, alpha=0.2, popsize=20, its=1000):
+    return ""
+
 #test functions sum(x^2)
-print(isa(lambda x: sum(x**2),[(-5, 5)]*10,alpha=0.2))
+print(isa(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4,[(-20, 20)]*2,alpha=0.2,popsize=50))
