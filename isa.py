@@ -1,6 +1,16 @@
-import numpy as np
+import json
 
-def isa (fobj, bounds, alpha=0.2, popsize=20, evals=1000):
+import numpy as np
+import time
+
+from utils import recording_intervals
+
+
+def isa(fobj, bounds, alpha=0.2, popsize=20, evals=1000):
+    #recording intervals
+    print("ISA: alpha: %s, popsize: %s, evals: %s" % (alpha, popsize, evals))
+    results = []
+    record_intervals = recording_intervals(evals)
     #init the population
     dimensions=len(bounds)
     init_pop = np.random.rand(popsize, dimensions)
@@ -54,10 +64,52 @@ def isa (fobj, bounds, alpha=0.2, popsize=20, evals=1000):
             if fit_new[i] < fit[i]:
                 fit[i] = fit_new[i]
                 pop[i] = pop_new[i]
-    return fit, pop
+        # record stats if needed
+        if j+1 in record_intervals:
+            result = {
+                'eval':j+1,
+                'best': np.amin(fit),
+                'std_dev': np.std(fit)
+            }
+            print(result)
+            results.append(result)
+    # return the best fitness and std devs. at the record_intervals
+    return { 'alpha':alpha, 'popsize': popsize, 'evaluations': results }
 
-def isa_runner(fobj, bounds, num_runs=30, alpha=0.2, popsize=20, its=1000):
-    return ""
+def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
+    # generate a timestamp
+    start_time = time.time()
+    filename = 'ISA_%s_%s_%s_%s_%s.json'%('-'.join(label.split()), its, popsize, evals, int(start_time))
+    results = []
+    print('-'*100)
+    print("Running ISA on %s with: popsize=%s, iterations=%s, evals per iteration=%s" % (label, popsize, its, evals))
+    #fitnesses
+    iter_fitnesses = []
+    for i in range(its):
+        print("Iteration: %s" % (i+1))
+        result = isa(fobj, bounds, alpha=0.2, popsize=20, evals=1000)
+        # last eval represents our results
+        iter_fitnesses.append(result['evaluations'][-1]['best'])
+        results.append(result)
+    result = {
+        'best': np.amin(iter_fitnesses),
+        'median': np.median(iter_fitnesses),
+        'mean': np.mean(iter_fitnesses),
+        'std_dev': np.std(iter_fitnesses),
+        'fitnesses': iter_fitnesses
+    }
+    print(result)
+    result['label'] = label
+    result['iterations'] = its
+    result['start_alpha'] = alpha
+    result['popsize'] = popsize
+    result['num_of_evaluations'] = evals
+    print("Writing Results to File %s"%filename)
+    result['iteration_results'] = results
+    with open(filename,'w') as result_file:
+        result_file.write(json.dumps(result, indent=4))
+    print('-' * 100)
 
-#test functions sum(x^2)
-print(isa(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4,[(-20, 20)]*2,alpha=0.2,popsize=50))
+
+isa_runner(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, 'Dekkers and Aarts', [(-20, 20)]*2, its=2, alpha=0.2, popsize=50, evals=1000)
+#print(json.dumps(isa(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, [(-20, 20)]*2, 'Dekkers and Aarts', alpha=0.2, popsize=50)))
