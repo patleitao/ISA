@@ -1,14 +1,11 @@
 import json
-
 import numpy as np
 import time
-
 from utils import recording_intervals
 
-
-def isa(fobj, bounds, alpha=0.2, popsize=20, evals=1000):
+def isa(fobj, bounds, alpha_ranges=[0.2], popsize=20, evals=1000):
     #recording intervals
-    print("ISA: alpha: %s, popsize: %s, evals: %s" % (alpha, popsize, evals))
+    print("ISA: popsize: %s, evals: %s" % (popsize, evals))
     results = []
     record_intervals = recording_intervals(evals)
     #init the population
@@ -21,6 +18,7 @@ def isa(fobj, bounds, alpha=0.2, popsize=20, evals=1000):
     #find fitnesses
     fit = np.asarray([fobj(ind) for ind in pop])
     for j in range(evals):
+        alpha = alpha_ranges[-1] if j > len(alpha_ranges)-1 else alpha_ranges[j]
         # find the best
         x_gb_idx = np.argmin(fit)
         gb = pop[x_gb_idx]
@@ -69,14 +67,15 @@ def isa(fobj, bounds, alpha=0.2, popsize=20, evals=1000):
             result = {
                 'eval':j+1,
                 'best': np.amin(fit),
-                'std_dev': np.std(fit)
+                'std_dev': np.std(fit),
+                'alpha': alpha
             }
             print(result)
             results.append(result)
     # return the best fitness and std devs. at the record_intervals
-    return { 'alpha':alpha, 'popsize': popsize, 'evaluations': results }
+    return { 'popsize': popsize, 'evaluations': results }
 
-def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
+def isa_runner(fobj, label, bounds, its=30, alpha_ranges=[0.2], popsize=20, evals=1000):
     # generate a timestamp
     start_time = time.time()
     filename = 'ISA_%s_%s_%s_%s_%s.json'%('-'.join(label.split()), its, popsize, evals, int(start_time))
@@ -87,7 +86,7 @@ def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
     iter_fitnesses = []
     for i in range(its):
         print("Iteration: %s" % (i+1))
-        result = isa(fobj, bounds, alpha=alpha, popsize=popsize, evals=evals)
+        result = isa(fobj, bounds, alpha_ranges=alpha_ranges, popsize=popsize, evals=evals)
         # last eval represents our results
         iter_fitnesses.append(result['evaluations'][-1]['best'])
         results.append(result)
@@ -101,7 +100,8 @@ def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
     print(result)
     result['label'] = label
     result['iterations'] = its
-    result['start_alpha'] = alpha
+    result['start_alpha'] = alpha_ranges[0]
+    result['end_alpha'] = alpha_ranges[-1]
     result['popsize'] = popsize
     result['num_of_evaluations'] = evals
     print("Writing Results to File %s"%filename)
