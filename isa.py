@@ -109,7 +109,3 @@ def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
     with open(filename,'w') as result_file:
         result_file.write(json.dumps(result, indent=4))
     print('-' * 100)
-
-
-isa_runner(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, 'Dekkers and Aarts', [(-20, 20)]*2, its=2, alpha=0.2, popsize=50, evals=10000)
-#print(json.dumps(isa(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, [(-20, 20)]*2, 'Dekkers and Aarts', alpha=0.2, popsize=50)))
