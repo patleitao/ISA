@@ -87,7 +87,7 @@ def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
     iter_fitnesses = []
     for i in range(its):
         print("Iteration: %s" % (i+1))
-        result = isa(fobj, bounds, alpha=0.2, popsize=20, evals=1000)
+        result = isa(fobj, bounds, alpha=alpha, popsize=popsize, evals=evals)
         # last eval represents our results
         iter_fitnesses.append(result['evaluations'][-1]['best'])
         results.append(result)
@@ -111,5 +111,5 @@ def isa_runner(fobj, label, bounds, its=30, alpha=0.2, popsize=20, evals=1000):
     print('-' * 100)
 
 
-isa_runner(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, 'Dekkers and Aarts', [(-20, 20)]*2, its=2, alpha=0.2, popsize=50, evals=1000)
+isa_runner(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, 'Dekkers and Aarts', [(-20, 20)]*2, its=2, alpha=0.2, popsize=50, evals=10000)
 #print(json.dumps(isa(lambda x: ((10**5)*x[0]**2) + x[1]**2 - (x[0]**2+x[1]**2)**2 + 10**-5*(x[0]**2 + x[1]**2)**4, [(-20, 20)]*2, 'Dekkers and Aarts', alpha=0.2, popsize=50)))
