@@ -65,3 +65,27 @@ isa_runner(lambda x: rastigins(x), 'Rastigins', [(-5.12, 5.12)]*10, its=30, pops
 isa_runner(lambda x: rastigins(x), 'Rastigins', [(-5.12, 5.12)]*10, its=30, f_alpha=lambda i: random.uniform(0.1, 0.2), popsize=50, evals=10000)
 # increasing alpha
 isa_runner(lambda x: rastigins(x), 'Rastigins', [(-5.12, 5.12)]*10, its=30, f_alpha=lambda i: 0.1+ (i * (0.2/1000)), popsize=50, evals=10000)
+
+
+def ackley(x):
+    a = 20
+    b = 0.2
+    c = 2 * np.pi
+    comp_x = 0
+    comp_x2 = 0
+    for i in range(0,len(x)):
+        comp_x += np.power(x[i], 2)
+        comp_x2 += np.cos(c*x[i])
+    comp_x = comp_x/len(x)
+    comp_x2 = comp_x2/len(x)
+    comp_1 = -a * np.exp(-b * np.sqrt(comp_x))
+    comp_2 = np.exp(comp_x2)
+    return comp_1 - comp_2 + a + np.exp(1)
+
+
+# constant alpha
+isa_runner(lambda x: ackley(x), 'Ackley', [(-32, 32)]*10, its=30, popsize=50, evals=10000)
+# random alpha
+isa_runner(lambda x: ackley(x), 'Ackley', [(-32, 32)]*10, its=30, f_alpha=lambda i: random.uniform(0.1, 0.2), popsize=50, evals=10000)
+# increasing alpha
+isa_runner(lambda x: ackley(x), 'Ackley', [(-32, 32)]*10, its=30, f_alpha=lambda i: 0.1+ (i * (0.2/1000)), popsize=50, evals=10000)
