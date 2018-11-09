@@ -1,6 +1,5 @@
 .idea
 .venv
-*.json
 __pycache__
 TODO
 .ipynb_checkpoints/
