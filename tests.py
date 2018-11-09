@@ -27,6 +27,13 @@ from pso import pso_runner
 #           [(-20, 20)]*2, its=2, w_ranges=[1.1 - (i * (1.0/1000)) for i in range(1000)], popsize=50, evals=1000)
 
 
+# constant alpha
+isa_runner(lambda x: easom(x[0],x[1]), 'Easom', [(-10, 10)]*2, its=30, popsize=25, evals=1000)
+# random alpha
+isa_runner(lambda x: easom(x[0],x[1]), 'Easom', [(-10, 10)]*2, its=30, f_alpha=lambda i: random.uniform(0.1, 0.2), popsize=25, evals=1000)
+# increasing alpha
+isa_runner(lambda x: easom(x[0],x[1]), 'Easom', [(-10, 10)]*2, its=30, f_alpha=lambda i: 0.1+ (i * (0.2/1000)), popsize=25, evals=1000)
+
 
 kowalik_consts = [ [0.1957, 0.25],
                    [0.1947, 0.50],
@@ -61,9 +68,19 @@ def easom(x,y):
     return -np.cos(x) * np.cos(y) * np.exp( -np.power((x-np.pi),2) - np.power(y-np.pi,2) )
 
 
+def rastigins(x):
+    total = 0
+    for i in range(0,len(x)):
+        val = np.power(x[i],2) + 10*np.cos(2*np.pi*x[i])
+        total += val
+    return 10*len(x) + total
+
+
 # constant alpha
-isa_runner(lambda x: easom(x[0],x[1]), 'Easom', [(-10, 10)]*2, its=30, popsize=50, evals=1000)
+isa_runner(lambda x: rastigins(x), 'Rastigins', [(-5.12, 5.12)]*10, its=30, popsize=50, evals=10000)
 # random alpha
-isa_runner(lambda x: easom(x[0],x[1]), 'Easom', [(-10, 10)]*2, its=30, f_alpha=lambda i: random.uniform(0.1, 0.2), popsize=50, evals=1000)
+isa_runner(lambda x: rastigins(x), 'Rastigins', [(-5.12, 5.12)]*10, its=30, f_alpha=lambda i: random.uniform(0.1, 0.2), popsize=50, evals=10000)
 # increasing alpha
-isa_runner(lambda x: easom(x[0],x[1]), 'Easom', [(-10, 10)]*2, its=30, f_alpha=lambda i: 0.1+ (i * (0.2/1000)), popsize=50, evals=1000)
+isa_runner(lambda x: rastigins(x), 'Rastigins', [(-5.12, 5.12)]*10, its=30, f_alpha=lambda i: 0.1+ (i * (0.2/1000)), popsize=50, evals=10000)
+
+
