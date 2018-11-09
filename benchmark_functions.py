@@ -49,3 +49,10 @@ def ackley(x):
     comp_1 = -a * np.exp(-b * np.sqrt(comp_x))
     comp_2 = np.exp(comp_x2)
     return comp_1 - comp_2 + a + np.exp(1)
+
+
+def sphere(x):
+    total = 0
+    for i in range(0,len(x)):
+        total+=np.power(x[i],2)
+    return total
