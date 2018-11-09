@@ -33,3 +33,19 @@ def kowalik(x1, x2, x3, x4):
         val = np.power(a_i - ( (x1 * (1 + (x2 * b_i)))/( 1 + (x3 * b_i) + (x4 * np.power(b_i,2) )) ), 2)
         total += val
     return total
+
+
+def ackley(x):
+    a = 20
+    b = 0.2
+    c = 2 * np.pi
+    comp_x = 0
+    comp_x2 = 0
+    for i in range(0,len(x)):
+        comp_x += np.power(x[i], 2)
+        comp_x2 += np.cos(c*x[i])
+    comp_x = comp_x/len(x)
+    comp_x2 = comp_x2/len(x)
+    comp_1 = -a * np.exp(-b * np.sqrt(comp_x))
+    comp_2 = np.exp(comp_x2)
+    return comp_1 - comp_2 + a + np.exp(1)
