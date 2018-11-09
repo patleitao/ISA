@@ -1,10 +1,12 @@
+from datetime import datetime
 import json
 import numpy as np
 import time
 from utils import recording_intervals
 
-def isa(fobj, bounds, alpha_ranges=[0.2], popsize=20, evals=1000):
+def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
     #recording intervals
+    start_time = time.time()
     print("ISA: popsize: %s, evals: %s" % (popsize, evals))
     results = []
     record_intervals = recording_intervals(evals)
@@ -18,7 +20,7 @@ def isa(fobj, bounds, alpha_ranges=[0.2], popsize=20, evals=1000):
     #find fitnesses
     fit = np.asarray([fobj(ind) for ind in pop])
     for j in range(evals):
-        alpha = alpha_ranges[-1] if j > len(alpha_ranges)-1 else alpha_ranges[j]
+        alpha = f_alpha(j)
         # find the best
         x_gb_idx = np.argmin(fit)
         gb = pop[x_gb_idx]
@@ -73,37 +75,42 @@ def isa(fobj, bounds, alpha_ranges=[0.2], popsize=20, evals=1000):
             print(result)
             results.append(result)
     # return the best fitness and std devs. at the record_intervals
-    return { 'popsize': popsize, 'evaluations': results }
+    return { 'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time }
 
-def isa_runner(fobj, label, bounds, its=30, alpha_ranges=[0.2], popsize=20, evals=1000):
+def isa_runner(fobj, label, bounds, its=30, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
     # generate a timestamp
     start_time = time.time()
+
     filename = 'ISA_%s_%s_%s_%s_%s.json'%('-'.join(label.split()), its, popsize, evals, int(start_time))
     results = []
     print('-'*100)
     print("Running ISA on %s with: popsize=%s, iterations=%s, evals per iteration=%s" % (label, popsize, its, evals))
     #fitnesses
     iter_fitnesses = []
+    total_time = 0
     for i in range(its):
         print("Iteration: %s" % (i+1))
-        result = isa(fobj, bounds, alpha_ranges=alpha_ranges, popsize=popsize, evals=evals)
+        result = isa(fobj, bounds, f_alpha=f_alpha, popsize=popsize, evals=evals)
         # last eval represents our results
         iter_fitnesses.append(result['evaluations'][-1]['best'])
+        total_time+=result['execution_time']
         results.append(result)
     result = {
         'best': np.amin(iter_fitnesses),
         'median': np.median(iter_fitnesses),
         'mean': np.mean(iter_fitnesses),
         'std_dev': np.std(iter_fitnesses),
-        'fitnesses': iter_fitnesses
+        'fitnesses': iter_fitnesses,
+        'label': label,
+        'iterations': its,
+        'start_alpha': f_alpha(0),
+        'end_alpha': f_alpha(-1),
+        'popsize': popsize,
+        'num_of_evaluations': evals,
+        'total_execution_time': total_time,
+        'avg_execution_time': total_time/its
     }
     print(result)
-    result['label'] = label
-    result['iterations'] = its
-    result['start_alpha'] = alpha_ranges[0]
-    result['end_alpha'] = alpha_ranges[-1]
-    result['popsize'] = popsize
-    result['num_of_evaluations'] = evals
     print("Writing Results to File %s"%filename)
     result['iteration_results'] = results
     with open(filename,'w') as result_file:
