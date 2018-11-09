@@ -14,6 +14,7 @@ One could consider adding constriction factor
 
 def pso(fobj, bounds, alpha1=2, alpha2=2, w_ranges=[0.9], v_max_perc=20 / 100, popsize=20, evals=1000):
     # recording intervals
+    start_time = time.time()
     print("PSO: popsize: %s, evals: %s" % (popsize, evals))
     results = []
     record_intervals = recording_intervals(evals)
@@ -66,15 +67,8 @@ def pso(fobj, bounds, alpha1=2, alpha2=2, w_ranges=[0.9], v_max_perc=20 / 100, p
         pop[pop > UB] = np.random.uniform(low=LB, high=UB, size=1)
 
     # return the best fitness and std devs. at the record_intervals
-    return {'popsize': popsize, 'evaluations': results}
+    return {'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time}
 
-
-# def main():
-#     pso((lambda x: sum(map(lambda y: y**2, x))), [(-5, 5)]*2, popsize=30, evals=100)
-
-
-# if __name__ == '__main__':
-#     main()
 
 
 def pso_runner(fobj, label, bounds, its=30, w_ranges=[0.9], popsize=20, evals=1000):
@@ -86,26 +80,30 @@ def pso_runner(fobj, label, bounds, its=30, w_ranges=[0.9], popsize=20, evals=10
     print("Running PSO on %s with: popsize=%s, iterations=%s, evals per iteration=%s" % (label, popsize, its, evals))
     # fitnesses
     iter_fitnesses = []
+    total_time = 0
     for i in range(its):
         print("Iteration: %s" % (i + 1))
         result = pso(fobj, bounds, w_ranges=w_ranges, popsize=popsize, evals=evals)
         # last eval represents our results
         iter_fitnesses.append(result['evaluations'][-1]['best'])
+        total_time+=result['execution_time']
         results.append(result)
     result = {
         'best': np.amin(iter_fitnesses),
         'median': np.median(iter_fitnesses),
         'mean': np.mean(iter_fitnesses),
         'std_dev': np.std(iter_fitnesses),
-        'fitnesses': iter_fitnesses
+        'fitnesses': iter_fitnesses,
+        'label': label,
+        'iterations': its,
+        'start_w': w_ranges[0],
+        'end_w': w_ranges[-1],
+        'popsize': popsize,
+        'num_of_evaluations': evals,
+        'total_execution_time': total_time,
+        'avg_execution_time': total_time/its
     }
     print(result)
-    result['label'] = label
-    result['iterations'] = its
-    result['start_w'] = w_ranges[0]
-    result['end_w'] = w_ranges[-1]
-    result['popsize'] = popsize
-    result['num_of_evaluations'] = evals
     print("Writing Results to File %s" % filename)
     result['iteration_results'] = results
     with open(filename, 'w') as result_file:
