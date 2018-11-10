@@ -67,7 +67,7 @@ def pso(fobj, bounds, alpha1=2, alpha2=2, w_ranges=[0.9], v_max_perc=20 / 100, p
         pop[pop > UB] = np.random.uniform(low=LB, high=UB, size=1)
 
     # return the best fitness and std devs. at the record_intervals
-    return {'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time}
+    return {'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time, 'best_fitness': gb_fit, 'values': gb.tolist() }
 
 
 

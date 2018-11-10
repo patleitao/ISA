@@ -26,5 +26,4 @@ pso_runner(lambda x: sphere(x), 'Sphere', [(-100, 100)]*20, its=30, popsize=50, 
 # decreasing w
 pso_runner(lambda x: sphere(x), 'Sphere', [(-100, 100)]*20, its=30, w_ranges=[1.1 - (w * (1.0/10000)) for w in range(10000)], popsize=50, evals=10000)
 
-
 pso_runner(lambda x: schwefel(x), 'Schwefel', [(-500, 500)]*20, its=30, w_ranges=[1.1 - (w * (1.0/10000)) for w in range(10000)], popsize=50, evals=10000)
