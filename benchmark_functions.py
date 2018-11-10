@@ -56,3 +56,9 @@ def sphere(x):
     for i in range(0,len(x)):
         total+=np.power(x[i],2)
     return total
+
+def schwefel(x):
+    total = 0
+    for i in range(0,len(x)):
+        total += (x[i] * np.sin(np.sqrt(np.abs(x[i]))))
+    return (418.9829 * len(x)) - total
