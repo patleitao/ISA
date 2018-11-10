@@ -45,12 +45,12 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
             # apply the evolutionary bounding constraint scheme to the new point
             is_lower = np.argwhere(pop_new[i] < Lb)
             is_greater = np.argwhere(pop_new[i] > Ub)
-            if is_lower.any():
+            if len(is_lower) > 0:
                 # apply the lower bound constraint
                 # assumption - we use the same random number on all violations
                 a = np.random.rand(1, 1)
                 pop_new[i][is_lower]= (a * Lb[is_lower]) + ((1-a)*gb[is_lower])
-            if is_greater.any():
+            if len(is_greater) > 0:
                 # apply the upper bound constraint
                 # assumption - we use the same random number on all violations
                 b = np.random.rand(1, 1)
