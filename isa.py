@@ -104,7 +104,7 @@ def isa_runner(fobj, label, bounds, its=30, f_alpha=lambda i: 0.2, popsize=20, e
         'label': label,
         'iterations': its,
         'start_alpha': f_alpha(0),
-        'end_alpha': f_alpha(-1),
+        'end_alpha': f_alpha(evals-1),
         'popsize': popsize,
         'num_of_evaluations': evals,
         'total_execution_time': total_time,
