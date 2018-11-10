@@ -30,7 +30,7 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
         Lb_j = pop.min(axis=0)
         Ub_j = pop.max(axis=0)
         for i in range(popsize):
-            if j == x_gb_idx:
+            if i == x_gb_idx:
                 # global best - do some random walk
                 pop_new[i] = pop[i]+(np.random.normal(size=dimensions) * gb_lam)
             else:
@@ -41,8 +41,7 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
                     pop_new[i] = (2 * xm_i_j) - pop[i]
                 else:
                     # composition group
-                    r_2 = np.random.rand(1, 1)[0][0]
-                    pop_new[i] = Lb_j + (Ub_j-Lb_j)*r_2
+                    pop_new[i] = Lb_j + (Ub_j-Lb_j)*np.random.rand(1,dimensions )
             # apply the evolutionary bounding constraint scheme to the new point
             is_lower = np.argwhere(pop_new[i] < Lb)
             is_greater = np.argwhere(pop_new[i] > Ub)
