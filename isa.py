@@ -108,7 +108,8 @@ def isa_runner(fobj, label, bounds, its=30, f_alpha=lambda i: 0.2, popsize=20, e
         'popsize': popsize,
         'num_of_evaluations': evals,
         'total_execution_time': total_time,
-        'avg_execution_time': total_time/its
+        'avg_execution_time': total_time/its,
+        "dimensions": len(bounds)
     }
     print(result)
     print("Writing Results to File %s"%filename)

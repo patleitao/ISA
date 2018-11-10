@@ -101,7 +101,8 @@ def pso_runner(fobj, label, bounds, its=30, w_ranges=[0.9], popsize=20, evals=10
         'popsize': popsize,
         'num_of_evaluations': evals,
         'total_execution_time': total_time,
-        'avg_execution_time': total_time/its
+        'avg_execution_time': total_time/its,
+        'dimensions': len(bounds)
     }
     print(result)
     print("Writing Results to File %s" % filename)
