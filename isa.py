@@ -74,7 +74,7 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
             print(result)
             results.append(result)
     # return the best fitness and std devs. at the record_intervals
-    return { 'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time }
+    return { 'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time, 'best_fitness': fit[x_gb_idx], 'values': pop[x_gb_idx].tolist()  }
 
 def isa_runner(fobj, label, bounds, its=30, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
     # generate a timestamp
