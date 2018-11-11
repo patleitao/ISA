@@ -30,7 +30,7 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
         Lb_j = pop.min(axis=0)
         Ub_j = pop.max(axis=0)
         for i in range(popsize):
-            if j == x_gb_idx:
+            if i == x_gb_idx:
                 # global best - do some random walk
                 pop_new[i] = pop[i]+(np.random.normal(size=dimensions) * gb_lam)
             else:
@@ -41,17 +41,16 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
                     pop_new[i] = (2 * xm_i_j) - pop[i]
                 else:
                     # composition group
-                    r_2 = np.random.rand(1, 1)[0][0]
-                    pop_new[i] = Lb_j + (Ub_j-Lb_j)*r_2
+                    pop_new[i] = Lb_j + (Ub_j-Lb_j)*np.random.rand(1,dimensions )
             # apply the evolutionary bounding constraint scheme to the new point
             is_lower = np.argwhere(pop_new[i] < Lb)
             is_greater = np.argwhere(pop_new[i] > Ub)
-            if is_lower.any():
+            if len(is_lower) > 0:
                 # apply the lower bound constraint
                 # assumption - we use the same random number on all violations
                 a = np.random.rand(1, 1)
                 pop_new[i][is_lower]= (a * Lb[is_lower]) + ((1-a)*gb[is_lower])
-            if is_greater.any():
+            if len(is_greater) > 0:
                 # apply the upper bound constraint
                 # assumption - we use the same random number on all violations
                 b = np.random.rand(1, 1)
@@ -75,7 +74,7 @@ def isa(fobj, bounds, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
             print(result)
             results.append(result)
     # return the best fitness and std devs. at the record_intervals
-    return { 'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time }
+    return { 'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time, 'best_fitness': fit[x_gb_idx], 'values': pop[x_gb_idx].tolist()  }
 
 def isa_runner(fobj, label, bounds, its=30, f_alpha=lambda i: 0.2, popsize=20, evals=1000):
     # generate a timestamp
@@ -104,11 +103,12 @@ def isa_runner(fobj, label, bounds, its=30, f_alpha=lambda i: 0.2, popsize=20, e
         'label': label,
         'iterations': its,
         'start_alpha': f_alpha(0),
-        'end_alpha': f_alpha(-1),
+        'end_alpha': f_alpha(evals-1),
         'popsize': popsize,
         'num_of_evaluations': evals,
         'total_execution_time': total_time,
-        'avg_execution_time': total_time/its
+        'avg_execution_time': total_time/its,
+        "dimensions": len(bounds)
     }
     print(result)
     print("Writing Results to File %s"%filename)

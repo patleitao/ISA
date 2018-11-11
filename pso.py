@@ -67,7 +67,7 @@ def pso(fobj, bounds, alpha1=2, alpha2=2, w_ranges=[0.9], v_max_perc=20 / 100, p
         pop[pop > UB] = np.random.uniform(low=LB, high=UB, size=1)
 
     # return the best fitness and std devs. at the record_intervals
-    return {'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time}
+    return {'popsize': popsize, 'evaluations': results, 'execution_time': time.time() - start_time, 'best_fitness': gb_fit, 'values': gb.tolist() }
 
 
 
@@ -101,7 +101,8 @@ def pso_runner(fobj, label, bounds, its=30, w_ranges=[0.9], popsize=20, evals=10
         'popsize': popsize,
         'num_of_evaluations': evals,
         'total_execution_time': total_time,
-        'avg_execution_time': total_time/its
+        'avg_execution_time': total_time/its,
+        'dimensions': len(bounds)
     }
     print(result)
     print("Writing Results to File %s" % filename)
